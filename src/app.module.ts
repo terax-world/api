@@ -13,11 +13,10 @@ import { ServerService } from './server/server.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { PaymentService } from './payment/payment.service';
 import { PaymentController } from './payment/payment.controller';
-import { RedirectLinkController } from './payment/redirect-link.controller';
 
 @Module({
   imports: [PrismaModule],
-  controllers: [AppController, CategoryController, InvoiceController, ProductController, ServerController, PaymentController, RedirectLinkController],
+  controllers: [AppController, CategoryController, InvoiceController, ProductController, ServerController, PaymentController],
   providers: [AppService, CategoryService, InvoiceService, PaymentService, PrismaService, ProductService, ServerService, PaymentService],
 })
 export class AppModule {}
