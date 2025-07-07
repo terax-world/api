@@ -58,7 +58,7 @@ export class PaymentService {
         url: response.init_point,
       },
     })
-    return `http://localhost:8080/${shortId}`;
+    return `${process.env.ACCESS_URL}/${shortId}`;
   }
 
   async generatePixQrCode(slug: string) {
