@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id          String     @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  categories  Category[] @relation("ProductCategories")
+  qrcode      String
+  paylink     String
+  servers     Server[]   @relation("ProductServers")
+  permissions String[]
+  commands    String[]
+  price       Float
+  promoPrice  Float?
+  image       String?
+  slug        String     @unique
+  invoices    Invoice[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Category {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  image       String?
+  products    Product[] @relation("ProductCategories")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Server {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  image       String?
+  products    Product[] @relation("ProductServers")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Invoice {
+  id              String   @id @default(uuid()) @db.Uuid
+  playerNick      String
+  productId       String   @db.Uuid
+  status          String   @default("pending")
+  paymentType     String
+  amount          Float
+  paymentDate     DateTime @default(now())
+  paymentLink     String
+  mpTransactionId String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model PaymentLink {
+  id String @id @default(cuid())
+  slug String @unique
+  url String 
+  createdAt DateTime @default(now())
+}
