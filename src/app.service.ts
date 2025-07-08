@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AppService {
-  getHello(): {message: string} {
+  getHello(): { message: string, autor: string } {
     return {
-      message: 'API for Terax.World Minecraft Network Server Ecosystem',
+      message: 'API Restful for Terax.World Minecraft Network Server',
+      autor: 'by @neveshardd in Github'
     }
   }
 }

@@ -14,63 +14,55 @@ datasource db {
 }
 
 model Product {
-  id          String     @id @default(uuid()) @db.Uuid
+  id          String   @id @unique @default(uuid())
   name        String
   description String?
-  categories  Category[] @relation("ProductCategories")
-  qrcode      String
-  paylink     String
-  servers     Server[]   @relation("ProductServers")
+  categories  Category @relation(fields: [categoryId], references: [id])
+  servers     Server   @relation(fields: [serverId], references: [id])
   permissions String[]
   commands    String[]
   price       Float
   promoPrice  Float?
   image       String?
-  slug        String     @unique
-  invoices    Invoice[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  duration    Int?
+  slug        String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  categoryId  String
+  serverId    String
 }
 
 model Category {
-  id          String    @id @default(uuid()) @db.Uuid
+  id          String    @id @unique @default(uuid())
   name        String
   description String?
   image       String?
-  products    Product[] @relation("ProductCategories")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  Product     Product[]
 }
 
 model Server {
-  id          String    @id @default(uuid()) @db.Uuid
+  id          String    @id @unique @default(uuid())
   name        String
   description String?
   image       String?
-  products    Product[] @relation("ProductServers")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  Product     Product[]
 }
 
 model Invoice {
-  id              String   @id @default(uuid()) @db.Uuid
-  playerNick      String
-  productId       String   @db.Uuid
-  status          String   @default("pending")
-  paymentType     String
-  amount          Float
-  paymentDate     DateTime @default(now())
-  paymentLink     String
-  mpTransactionId String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  product Product @relation(fields: [productId], references: [id])
+  id            String   @id @unique @default(uuid())
+  productId     String
+  status        String
+  paymentMethod String
+  amount        Float
+  transactionId String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
-model PaymentLink {
-  id String @id @default(cuid())
-  slug String @unique
-  url String 
-  createdAt DateTime @default(now())
+model Payment {
+  id String @id @unique @default(cuid())
 }

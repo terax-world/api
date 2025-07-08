@@ -1,66 +1,89 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
-import slugify from "slugify";
+import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class ProductService {
-  constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService
+    ){}
 
-  async getBySlug(slug: string) {
-    const product = await this.prisma.product.findUnique({
-      where: { slug },
-      include: { categories: true, servers: true },
-    });
+    async create(data: CreateProductDto){
+        const exists = await this.prisma.product.findFirst({
+            where: {
+                OR: [{ name: data.name }, { slug: data.slug }]
+            }
+        })
 
-    if (!product) {
-      throw new NotFoundException(`Produto com slug "${slug}" não encontrado`);
+        if (exists) {
+            throw new BadRequestException('Já existe um produto com este Nome ou Slug.')
+        }
+
+        const [ category, server ] = await Promise.all([
+            this.prisma.category.findUnique({ where: { id: data.categoryId } }),
+            this.prisma.server.findUnique({ where: { id: data.serverId } })
+        ])
+
+        if (!category) throw new BadRequestException('Categoria não encotrada.')
+        if (!server) throw new BadRequestException('Servidor não encontrado.')
+
+        return this.prisma.product.create({ data })
     }
 
-    return product;
-  }
+    findAll(){
+        return this.prisma.product.findMany({
+            include: { categories: true, servers: true }
+        })
+    }
 
-  create(data: CreateProductDto) {
+    async findOne(id: string){
+        const product = await this.prisma.product.findUnique({ where: { id } })
+        if (!product) throw new NotFoundException('Produto não encontrado')
+        return product
+    }
 
-    const slug = data.slug || slugify(data.name, { lower: true, strict: true })
-    return this.prisma.product.create({
-      data: {
-        ...data,
-        slug,
-        categories: {
-          connect: data.categoryIds?.map(id => ({ id })) || [],
-        },
-        servers: {
-          connect: data.serverIds?.map(id => ({ id })) || [],
-        },
-      },
-    });
-  }
+    findBySlug(slug: string) {
+        return this.prisma.product.findUnique({
+            where: { slug },
+            include: { categories: true, servers: true }
+        })
+    }
 
-  findAll() {
-    return this.prisma.product.findMany({ include: { categories: true, servers: true } });
-  }
+    async update(id: string, data: UpdateProductDto){
+        const product = await this.prisma.product.findUnique({ where: { id } })
+        if (!product) throw new NotFoundException('Produto não encontrado.')
 
-  findOne(id: string) {
-    return this.prisma.product.findUnique({
-      where: { id },
-      include: { categories: true, servers: true },
-    });
-  }
+        const orConditions: Prisma.ProductWhereInput[] = []
+        if (data.name) orConditions.push({ name: data.name })
+        if (data.slug) orConditions.push({ slug: data.slug })
 
-  update(id: string, data: UpdateProductDto) {
-    return this.prisma.product.update({
-      where: { id },
-      data: {
-        ...data,
-        categories: data.categoryIds ? { set: data.categoryIds.map(id => ({ id })) } : undefined,
-        servers: data.serverIds ? { set: data.serverIds.map(id => ({ id })) } : undefined,
-      },
-    });
-  }
+        if (orConditions.length > 0) {
+            const duplicate = await this.prisma.product.findFirst({
+                where: {
+                    AND: [
+                        { id : { not: id } },
+                        { OR: orConditions }
+                    ]
+                }
+            })
 
-  remove(id: string) {
-    return this.prisma.product.delete({ where: { id } });
-  }
+            if (duplicate) {
+                throw new BadRequestException('Já existe um produto com este Nome ou Slug.')
+            }
+        }
+
+        return this.prisma.product.update({
+            where: { id },
+            data
+        })
+    }
+
+    async remove(id: string){
+        const product = await this.prisma.product.findUnique({ where: { id } })
+        if (!product) throw new NotFoundException('Produto não encontrado')
+        
+        return this.prisma.product.delete({ where: { id } })
+    }
 }

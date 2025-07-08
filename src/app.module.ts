@@ -1,22 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CategoryController } from './category/category.controller';
-import { InvoiceController } from './invoice/invoice.controller';
-import { ProductController } from './product/product.controller';
-import { ServerController } from './server/server.controller';
-import { CategoryService } from './category/category.service';
-import { InvoiceService } from './invoice/invoice.service';
+import { ProductController } from './product/poduct.controller';
 import { PrismaService } from './prisma/prisma.service';
 import { ProductService } from './product/product.service';
-import { ServerService } from './server/server.service';
-import { PrismaModule } from './prisma/prisma.module';
-import { PaymentService } from './payment/payment.service';
-import { PaymentController } from './payment/payment.controller';
 
 @Module({
-  imports: [PrismaModule],
-  controllers: [AppController, CategoryController, InvoiceController, ProductController, ServerController, PaymentController],
-  providers: [AppService, CategoryService, InvoiceService, PaymentService, PrismaService, ProductService, ServerService, PaymentService],
+  imports: [],
+  controllers: [AppController, ProductController],
+  providers: [AppService, PrismaService, ProductService],
 })
 export class AppModule {}

@@ -1,49 +1,40 @@
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsArray, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateProductDto {
-  @IsString()
-  @IsNotEmpty()
-  name: string;
+    @IsString()
+    name: string
 
-  @IsString()
-  @IsOptional()
-  description?: string;
+    @IsString()
+    slug: string
 
-  @IsString()
-  @IsOptional()
-  image?: string;
+    @IsOptional()
+    @IsString()
+    description?: string
 
-  @IsNumber()
-  @IsNotEmpty()
-  price: number;
+    @IsString()
+    categoryId: string
 
-  @IsNumber()
-  @IsOptional()
-  promoPrice?: number;
+    @IsString()
+    serverId: string
 
-  @IsArray()
-  @IsOptional()
-  permissions?: string[];
+    @IsArray()
+    permission: string[]
 
-  @IsArray()
-  @IsOptional()
-  commands?: string[];
+    @IsArray()
+    commands: string[]
 
-  @IsArray()
-  @IsOptional()
-  categoryIds?: string[];
+    @IsNumber()
+    price: number
 
-  @IsArray()
-  @IsOptional()
-  serverIds?: string[];
+    @IsOptional()
+    @IsNumber()
+    promoPrice?: number
 
-  @IsString()
-  qrcode: string;
+    @IsOptional()
+    @IsString()
+    image?: string
 
-  @IsString()
-  paylink: string;
-
-  @IsString()
-  @IsOptional()
-  slug?: string;
+    @IsOptional()
+    @IsNumber()
+    duration?: number
 }
