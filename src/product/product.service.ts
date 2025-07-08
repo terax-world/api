@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { PrismaService } from "src/prisma/prisma.service";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
 import { Prisma } from "@prisma/client";
+import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
 export class ProductService {
@@ -55,7 +55,9 @@ export class ProductService {
         const product = await this.prisma.product.findUnique({ where: { id } })
         if (!product) throw new NotFoundException('Produto não encontrado.')
 
-        const orConditions: Prisma.ProductWhereInput[] = []
+        type ProductWhereInput = Prisma.ProductWhereInput
+        const orConditions: ProductWhereInput[] = []
+
         if (data.name) orConditions.push({ name: data.name })
         if (data.slug) orConditions.push({ slug: data.slug })
 
