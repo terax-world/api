@@ -1,4 +1,3 @@
-```markdown
 # API Terax World
 
 [![NestJS](https://img.shields.io/badge/NestJS-11.0.1-%23E02340)](https://nestjs.com/)
@@ -85,4 +84,3 @@ Este projeto está sob a licença UNLICENSED. Consulte o arquivo [LICENSE](LICEN
 ---
 
 Este README foi gerado com base na estrutura do projeto e nas informações fornecidas. Se precisar de mais informações ou quiser fazer ajustes, é só me avisar! 😊
-```
