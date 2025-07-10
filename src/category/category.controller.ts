@@ -18,10 +18,10 @@ export class CategoryController {
     }
 
     @Get(':id')
-    async findById(@Param('id') id: string): Promise<CategoryModel> {
+    async getCategoryById(@Param('id') id: string): Promise<CategoryModel> {
         const category = await this.service.category({ id: String(id) })
         if(!category){
-            throw new NotFoundException(`A Categoria com id: "${id}" não existe.`)
+            throw new NotFoundException(`A Categoria com id: '${id}' não existe.`)
         }
         return category
     }
@@ -33,7 +33,7 @@ export class CategoryController {
         const { name } = categoryData
         const categoryName = await this.service.category({ name })
         if(categoryName){
-            throw new BadRequestException('Já existe um servidor com este nome!')
+            throw new BadRequestException(`Já existe uma categoria com o nome '${name}'`)
         }
         return this.service.createCategory(categoryData)
     }
@@ -41,7 +41,7 @@ export class CategoryController {
     @Put(':id')
     async updateCategory(@Param('id') id: string, @Body() data: { name?: string; description?: string }): Promise<CategoryModel> {
         if (data.name) {
-            throw new BadRequestException(`Já existe uma categoria com o nome "${data.name}"`)
+            throw new BadRequestException(`Já existe uma categoria com o nome '${data.name}'`)
         }
 
         return this.service.updateCategory({
@@ -55,8 +55,10 @@ export class CategoryController {
         const category = await this.service.category({ id: String(id) })
 
         if(!category) {
-            throw new NotFoundException(`A Categoria com id: "${id}" não existe.`)
+            throw new NotFoundException(`A Categoria com id: '${id}' não existe.`)
         }
+
+        await this.productService.deleteProductByCategoryId(category.id)
 
         return this.service.deleteCategory({ id: category.id })
     }
