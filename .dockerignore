@@ -1,7 +1,0 @@
-node_modules
-dist
-.git
-Dockerfile
-Dockerfile.dev
-docker-compose.yml
-.env

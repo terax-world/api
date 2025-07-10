@@ -1,7 +1,5 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { CreateProductDto } from "./dto/create-product.dto";
-import { UpdateProductDto } from "./dto/update-product.dto";
-import { Prisma } from "@prisma/client";
+import { Prisma, Product } from ".prisma/client";
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
@@ -10,82 +8,67 @@ export class ProductService {
         private prisma: PrismaService
     ){}
 
-    async create(data: CreateProductDto){
-        const exists = await this.prisma.product.findFirst({
-            where: {
-                OR: [{ name: data.name }, { slug: data.slug }]
-            }
-        })
-
-        if (exists) {
-            throw new BadRequestException('Já existe um produto com este Nome ou Slug.')
-        }
-
-        const [ category, server ] = await Promise.all([
-            this.prisma.category.findUnique({ where: { id: data.categoryId } }),
-            this.prisma.server.findUnique({ where: { id: data.serverId } })
-        ])
-
-        if (!category) throw new BadRequestException('Categoria não encotrada.')
-        if (!server) throw new BadRequestException('Servidor não encontrado.')
-
-        return this.prisma.product.create({ data })
-    }
-
-    findAll(){
-        return this.prisma.product.findMany({
-            include: { categories: true, servers: true }
-        })
-    }
-
-    async findOne(id: string){
-        const product = await this.prisma.product.findUnique({ where: { id } })
-        if (!product) throw new NotFoundException('Produto não encontrado')
-        return product
-    }
-
-    findBySlug(slug: string) {
+    async product(
+        productWhereUniqueInput: Prisma.ProductWhereUniqueInput,
+    ): Promise<Product | null> {
         return this.prisma.product.findUnique({
-            where: { slug },
-            include: { categories: true, servers: true }
+            where: productWhereUniqueInput,
         })
     }
 
-    async update(id: string, data: UpdateProductDto){
-        const product = await this.prisma.product.findUnique({ where: { id } })
-        if (!product) throw new NotFoundException('Produto não encontrado.')
+    async products(params: {
+        skip?: number
+        take?: number
+        cursor?: Prisma.ProductWhereUniqueInput
+        where?: Prisma.ProductWhereInput
+        orderBy?: Prisma.ProductOrderByWithRelationInput
+    }): Promise<Product[]> {
+        const { skip, take, cursor, where, orderBy } = params
+        return this.prisma.product.findMany({
+            skip,
+            take,
+            cursor,
+            where,
+            orderBy
+        })
+    }
 
-        type ProductWhereInput = Prisma.ProductWhereInput
-        const orConditions: ProductWhereInput[] = []
-
-        if (data.name) orConditions.push({ name: data.name })
-        if (data.slug) orConditions.push({ slug: data.slug })
-
-        if (orConditions.length > 0) {
-            const duplicate = await this.prisma.product.findFirst({
-                where: {
-                    AND: [
-                        { id : { not: id } },
-                        { OR: orConditions }
-                    ]
-                }
-            })
-
-            if (duplicate) {
-                throw new BadRequestException('Já existe um produto com este Nome ou Slug.')
-            }
-        }
-
-        return this.prisma.product.update({
-            where: { id },
+    createProduct(data: Prisma.ProductCreateInput): Promise<Product> {
+        return this.prisma.product.create({
             data
         })
     }
 
-    async remove(id: string){
-        const product = await this.prisma.product.findUnique({ where: { id } })
-        if (!product) throw new NotFoundException('Produto não encontrado')
-        
-        return this.prisma.product.delete({ where: { id } })
+    updateProduct(params: {
+        where: Prisma.ProductWhereUniqueInput
+        data: Prisma.ProductUpdateInput
+    }): Promise<Product> {
+        const { where, data } = params
+        return this.prisma.product.update({
+            data,
+            where
+        })
+    }
+
+    async deleteProduct(where: Prisma.ProductWhereUniqueInput): Promise<Product> {
+        return this.prisma.product.delete({
+            where
+        })
+    }
+
+    async deleteProductByServerId(serverId: string): Promise<Prisma.BatchPayload> {
+        return this.prisma.product.deleteMany({
+            where: {
+                serverId
+            }
+        })
+    }
+
+    async deleteProductByCategoryId(categoryId: string): Promise<Prisma.BatchPayload>{
+        return this.prisma.product.deleteMany({
+            where: {
+                categoryId
+            }
+        })
     }
 }

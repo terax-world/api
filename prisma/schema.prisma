@@ -1,11 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = "linux-musl-openssl-3.0.x"
 }
 
 datasource db {
@@ -15,7 +10,7 @@ datasource db {
 
 model Product {
   id          String   @id @unique @default(uuid())
-  name        String
+  name        String   @unique
   description String?
   categories  Category @relation(fields: [categoryId], references: [id])
   servers     Server   @relation(fields: [serverId], references: [id])
@@ -26,6 +21,7 @@ model Product {
   image       String?
   duration    Int?
   slug        String   @unique
+  active      Boolean
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   categoryId  String
@@ -34,7 +30,7 @@ model Product {
 
 model Category {
   id          String    @id @unique @default(uuid())
-  name        String
+  name        String    @unique
   description String?
   image       String?
   createdAt   DateTime  @default(now())
@@ -44,7 +40,7 @@ model Category {
 
 model Server {
   id          String    @id @unique @default(uuid())
-  name        String
+  name        String    @unique
   description String?
   image       String?
   createdAt   DateTime  @default(now())
@@ -61,8 +57,4 @@ model Invoice {
   transactionId String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-}
-
-model Payment {
-  id String @id @unique @default(cuid())
 }
