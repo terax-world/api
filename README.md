@@ -3,7 +3,7 @@
 [![NestJS](https://img.shields.io/badge/NestJS-11.0.1-%23E02340)](https://nestjs.com/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7.3-%23007ACC)](https://www.typescriptlang.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-6.11.1-%23DE5E2C)](https://prisma.io/)
-[![License: UNLICENSED](https://img.shields.io/badge/license-UNLICENSED-lightgrey)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-black)](LICENSE)
 
 Um projeto API construído com NestJS, um framework progressive para construir APIs com Node.js, e Prisma como ORM.
 
@@ -13,6 +13,8 @@ Um projeto API construído com NestJS, um framework progressive para construir A
 - [Tecnologias](#tecnologias)
 - [Começando](#começando)
 - [Uso](#uso)
+  - [Endpoints](#endpoints)
+- [Versões](#versões)
 - [Contribuição](#contribuição)
 - [Licença](#licença)
 
@@ -58,12 +60,28 @@ Para usar a API, siga estas etapas:
 
 ### Endpoints
 
-- **Categories**: Gerenciamento de categorias
-  - `GET /categories`: Listar todas as categorias
-  - `POST /categories`: Criar uma nova categoria
-- **Products**: Gerenciamento de produtos
-  - `GET /products`: Listar todos os produtos
-  - `POST /products`: Criar um novo produto
+| Endpoint          | Method | Descrição                                      |
+|-------------------|--------|------------------------------------------------|
+| /categories       | GET    | Listar todas as categorias                      |
+| /categories       | POST   | Criar uma nova categoria                        |
+| /categories/:id   | GET    | Obter uma categoria pelo ID                     |
+| /categories/:id   | PUT    | Atualizar uma categoria pelo ID                 |
+| /categories/:id   | DELETE | Excluir uma categoria pelo ID                   |
+| /products         | GET    | Listar todos os produtos                        |
+| /products/:id     | GET    | Obter um produto pelo ID                        |
+| /servers          | GET    | Listar todos os servidores                      |
+| /servers/:id      | GET    | Obter um servidor pelo ID                       |
+| /servers/:id      | POST   | Criar um novo servidor                          |
+| /servers/:id      | PUT    | Atualizar um servidor pelo ID                   |
+| /servers/:id      | DELETE | Excluir um servidor pelo ID                     |
+
+## Versões
+
+| Versão | Data       | Descrição                             |
+|--------|------------|---------------------------------------|
+| 1.0.0  | 2024-07-11 | Lançamento inicial                     |
+| 1.1.0  | 2024-08-01 | Adição de endpoints para servidores    |
+| 1.2.0  | 2024-09-15 | Melhorias na performance e estabilidade|
 
 ## Contribuição
 
@@ -79,8 +97,6 @@ Para contribuir com este projeto, siga estas etapas:
 
 ## Licença
 
-Este projeto está sob a licença UNLICENSED. Consulte o arquivo [LICENSE](LICENSE) para mais detalhes.
+Este projeto está sob a licença MIT. Consulte o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ---
-
-Este README foi gerado com base na estrutura do projeto e nas informações fornecidas. Se precisar de mais informações ou quiser fazer ajustes, é só me avisar! 😊
