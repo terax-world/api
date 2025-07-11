@@ -10,9 +10,10 @@ Welcome to the TeraxWorld API documentation. This API provides endpoints for man
 2. [API Endpoints](#api-endpoints)
 3. [Database Models](#database-models)
 4. [Configuration](#configuration)
-5. [Development](#development)
-6. [Contributing](#contributing)
-7. [License](#license)
+5. [Technologies](#technologies)
+6. [Development](#development)
+7. [Contributing](#contributing)
+8. [License](#license)
 
 ## Getting Started
 
@@ -137,6 +138,21 @@ The API is configured using the following files:
 - **.env**: Environment variables.
 - **prisma/schema.prisma**: Prisma schema for database models.
 - **nest-cli.json**: NestJS CLI configuration.
+
+## Technologies
+
+The TeraxWorld API is built using the following technologies:
+
+- **NestJS**: A progressive Node.js framework for building efficient, reliable, and scalable server-side applications.
+- **Prisma**: A modern ORM for Node.js that connects to your database and allows you to perform CRUD operations.
+- **TypeScript**: A superset of JavaScript that adds static types.
+- **Express**: A web application framework for Node.js.
+- **PostgreSQL**: A powerful, open-source object-relational database system.
+- **Docker**: A platform for developing, shipping, and running applications in containers.
+- **Webpack**: A module bundler for JavaScript applications.
+- **Jest**: A testing framework for JavaScript.
+- **ESLint**: A linter for identifying and reporting on patterns in JavaScript.
+- **Prettier**: An opinionated code formatter.
 
 ## Development
 
