@@ -32,7 +32,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "19647:19647"
     networks:
       - app-network
     restart: unless-stopped
