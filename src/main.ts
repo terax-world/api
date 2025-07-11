@@ -21,7 +21,7 @@ async function bootstrap() {
   })
 
   await app.startAllMicroservices()
-  await app.listen(3000)
+  await app.listen(8080)
 
   if (module.hot) {
     module.hot.accept();

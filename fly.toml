@@ -1,22 +1,45 @@
-# fly.toml
 app = "api-n55clg"
+
 primary_region = "gru"
 
 [build]
   dockerfile = "Dockerfile"
+  context = "."
 
 [env]
-  NODE_ENV = "production"
-  PORT = "3000"
+  DATABASE_URL = "${DATABASE_URL}"
+  MERCADO_PAGO_ACCESS_TOKEN = "${MERCADO_PAGO_ACCESS_TOKEN}"
+  REDIS_HOST = "${REDIS_HOST}"
+  REDIS_PASSWORD = "${REDIS_PASSWORD}"
+  REDIS_PORT = "${REDIS_PORT}"
+  REDIS_USERNAME = "${REDIS_USERNAME}"
 
-[http_service]
-  internal_port = 3000
-  force_https = true
-  auto_stop_machines = true
-  auto_start_machines = true
-  min_machines_running = 0
+[experimental]
+  allowed_public_ports = []
+  auto_rollback = true
 
-[[vm]]
-  memory = "512mb"
-  cpu_kind = "shared"
-  cpus = 1
+[[services]]
+  internal_port = 8080
+  protocol = "tcp"
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [[services.tcp_checks]]
+    interval = "15s"
+    timeout = "2s"
+    grace_period = "10s"
+    restart_limit = 0
+
+  [[services.http_checks]]
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "get"
+    path = "/"
+    protocol = "http"
