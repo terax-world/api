@@ -10,6 +10,12 @@ declare const module: any
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
+  app.enableCors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  })
+
   const redisMicroservice = app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.REDIS,
     options: {
