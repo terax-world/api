@@ -2,7 +2,14 @@ import { OnGatewayInit, WebSocketGateway, WebSocketServer } from "@nestjs/websoc
 import { Server } from "socket.io";
 import { RedisService } from "src/redis/redis.service";
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway({ 
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
+    credentials: false
+  } 
+})
 export class RealtimeGateway implements OnGatewayInit {
     @WebSocketServer()
     server: Server
