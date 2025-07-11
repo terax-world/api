@@ -6,7 +6,7 @@ import { PrismaService } from "src/prisma/prisma.service";
 export class ProductService {
     constructor(
         private prisma: PrismaService
-    ){}
+    ) { }
 
     async product(
         productWhereUniqueInput: Prisma.ProductWhereUniqueInput,
@@ -33,21 +33,39 @@ export class ProductService {
         })
     }
 
-    createProduct(data: Prisma.ProductCreateInput): Promise<Product> {
+    async createProduct(data: Prisma.ProductCreateInput): Promise<Product> {
+        const fixedDuration =
+            typeof data.duration === 'number' && (data.duration === 0 || data.duration === null)
+                ? -1
+                : data.duration;
+
         return this.prisma.product.create({
-            data
-        })
+            data: {
+                ...data,
+                duration: fixedDuration
+            }
+        });
     }
 
-    updateProduct(params: {
-        where: Prisma.ProductWhereUniqueInput
-        data: Prisma.ProductUpdateInput
+    async updateProduct(params: {
+        where: Prisma.ProductWhereUniqueInput;
+        data: Prisma.ProductUpdateInput;
     }): Promise<Product> {
-        const { where, data } = params
+        const { where, data } = params;
+
+        let newData = { ...data };
+
+        if (
+            typeof data.duration === 'number' &&
+            (data.duration === 0 || data.duration === null)
+        ) {
+            newData.duration = -1;
+        }
+
         return this.prisma.product.update({
-            data,
-            where
-        })
+            where,
+            data: newData
+        });
     }
 
     async deleteProduct(where: Prisma.ProductWhereUniqueInput): Promise<Product> {
@@ -64,11 +82,19 @@ export class ProductService {
         })
     }
 
-    async deleteProductByCategoryId(categoryId: string): Promise<Prisma.BatchPayload>{
+    async deleteProductByCategoryId(categoryId: string): Promise<Prisma.BatchPayload> {
         return this.prisma.product.deleteMany({
             where: {
                 categoryId
             }
         })
+    }
+
+    async categoryExists(id: string): Promise<boolean> {
+        return !!(await this.prisma.category.findUnique({ where: { id } }));
+    }
+
+    async serverExists(id: string): Promise<boolean> {
+        return !!(await this.prisma.server.findUnique({ where: { id } }));
     }
 }

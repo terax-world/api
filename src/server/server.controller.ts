@@ -21,7 +21,7 @@ export class ServerController {
     async getServerById(@Param('id') id: string): Promise<ServerModel> {
         const server = await this.service.server({ id: String(id) })
         if(!server){
-            throw new NotFoundException(`O Servidor com o id: '${id}' não existe.`)
+            throw new NotFoundException(`O servidor com o id: '${id}' não existe.`)
         }
         return server
     }
@@ -33,7 +33,7 @@ export class ServerController {
         const { name } = serverData
         const serverName = await this.service.server({ name })
         if(serverName){
-            throw new BadRequestException(`Já existe um servidor com o nome '${name}'!`)
+            throw new BadRequestException(`Já existe um servidor com o nome '${name}'.`)
         }
         return this.service.createServer(serverData)
     }
@@ -60,7 +60,7 @@ export class ServerController {
         const server = await this.service.server({ id: String(id)})
 
         if(!server){
-            throw new NotFoundException(`O Servidor com o id: '${id}' não existe.`)
+            throw new NotFoundException(`O servidor com o id: '${id}' não existe.`)
         }
 
         await this.productService.deleteProductByServerId(server.id)
