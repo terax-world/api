@@ -1,6 +1,7 @@
 import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Post, Put } from "@nestjs/common";
 import { ProductService } from "./product.service";
 import { Product as ProductModel } from ".prisma/client";
+import { MessagePattern } from "@nestjs/microservices";
 
 @Controller('products')
 export class ProductController {
@@ -8,6 +9,7 @@ export class ProductController {
         private readonly service: ProductService
     ) { }
 
+    @MessagePattern({ cmd: 'findAllProducts' })
     @Get()
     async findAll(): Promise<ProductModel[]> {
         return this.service.products({
@@ -15,6 +17,7 @@ export class ProductController {
         })
     }
 
+    @MessagePattern({ cmd: 'getProductById' })
     @Get(':id')
     async getProductById(@Param('id') id: string): Promise<ProductModel> {
         const product = await this.service.product({ id: String(id) })
@@ -24,6 +27,7 @@ export class ProductController {
         return product
     }
 
+    @MessagePattern({ cmd: 'createProduct' })
     @Post()
     async createProduct(
         @Body() productData: {
@@ -79,6 +83,7 @@ export class ProductController {
         });
     }
 
+    @MessagePattern({ cmd: 'updateProductById' })
     @Put(':id')
     async updateProduct(@Param('id') id: string, @Body() productData: {
         name?: string;
@@ -118,6 +123,7 @@ export class ProductController {
         })
     }
 
+    @MessagePattern({ cmd: 'deleteProductById' })
     @Delete(':id')
     async deleteProduct(@Param('id') id: string): Promise<{ message: string }> {
         const product = await this.service.product({ id })

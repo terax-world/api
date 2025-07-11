@@ -25,7 +25,6 @@ export class InvoiceService {
         nick: string;
         paymentMethod: string;
     }): Promise<{ qrcode?: string; link?: string }> {
-        // Validações dos campos obrigatórios
         if (!data.productSlug || data.productSlug.trim() === '') {
             throw new Error('O slug do produto é obrigatório e não pode estar em branco');
         }
@@ -38,7 +37,6 @@ export class InvoiceService {
             throw new Error('O método de pagamento é obrigatório e não pode estar em branco');
         }
 
-        // Busca o produto
         const product = await this.prisma.product.findFirst({
             where: { slug: data.productSlug },
         });

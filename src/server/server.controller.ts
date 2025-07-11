@@ -2,6 +2,7 @@ import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, 
 import { Server as ServerModel } from ".prisma/client";
 import { ServerService } from "./server.service";
 import { ProductService } from "src/product/product.service";
+import { MessagePattern } from "@nestjs/microservices";
 
 @Controller('servers')
 export class ServerController {
@@ -10,6 +11,7 @@ export class ServerController {
         private readonly productService: ProductService
     ){}
 
+    @MessagePattern({ cmd: 'findAllServers' })
     @Get()
     async findAll(): Promise<ServerModel[]> {
         return this.service.servers({
@@ -17,6 +19,7 @@ export class ServerController {
         })
     }
 
+    @MessagePattern({ cmd: 'getServerById' })
     @Get(':id')
     async getServerById(@Param('id') id: string): Promise<ServerModel> {
         const server = await this.service.server({ id: String(id) })
@@ -38,6 +41,7 @@ export class ServerController {
         return this.service.createServer(serverData)
     }
 
+    @MessagePattern({ cmd: 'updateServerById' })
     @Put(':id')
     async updateServer(@Param('id') id: string, @Body() data: { name?: string; description?: string }): Promise<ServerModel> {
         const server = await this.service.server({ id: String(id) })
@@ -55,6 +59,7 @@ export class ServerController {
         })
     }
 
+    @MessagePattern({ cmd: 'deleteServerById' })
     @Delete(':id')
     async deleteServer(@Param('id') id: string): Promise<{ message: string }> {
         const server = await this.service.server({ id: String(id)})

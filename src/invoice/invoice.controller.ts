@@ -1,10 +1,14 @@
 import { Body, Controller, Post, HttpException, HttpStatus, Get, Delete, Param } from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
+import { MessagePattern } from '@nestjs/microservices';
 
 @Controller('invoices')
 export class InvoiceController {
-  constructor(private readonly invoiceService: InvoiceService) { }
+  constructor(
+    private readonly invoiceService: InvoiceService,
+  ) { }
 
+  @MessagePattern({ cmd: 'createInvoice' })
   @Post()
   async create(@Body() body: {
     productSlug: string;
@@ -23,11 +27,13 @@ export class InvoiceController {
     }
   }
 
+  @MessagePattern({ cmd: 'getAllInvoices' })
   @Get()
   getAll() {
     return this.invoiceService.getAllInvoices();
   }
 
+  @MessagePattern({ cmd: 'deleteInvoiceById'})
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.invoiceService.deleteInvoiceById(id);
