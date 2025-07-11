@@ -8,15 +8,18 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { RealtimeModule } from './gateway/realtime.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [ProductModule, CategoryModule, ServerModule, InvoiceModule,
+    RealtimeModule, PrismaModule, RedisModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
-      serveRoot: '/'
+      serveRoot: '/static'
     })
   ],
   controllers: [AppController],
-  providers: [PrismaModule, AppService],
+  providers: [AppService],
 })
 export class AppModule {}

@@ -2,6 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
 import * as dotenv from "dotenv";
+import { RedisService } from "src/redis/redis.service";
 
 dotenv.config();
 
@@ -11,7 +12,10 @@ export class InvoiceService {
     private readonly preference: Preference;
     private readonly payment: Payment;
 
-    constructor(private prisma: PrismaService) {
+    constructor(
+        private prisma: PrismaService,
+        private readonly redis: RedisService
+    ) {
         const client = new MercadoPagoConfig({
             accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN!,
         });
@@ -142,6 +146,27 @@ export class InvoiceService {
             this.logger.error('Erro ao buscar invoices:', error);
             throw error;
         }
+    }
+
+    async updateInvoice(id: string, data: any) {
+        await this.prisma.invoice.update({
+            where: { id },
+            data,
+        });
+
+        const updated = await this.prisma.invoice.findUnique({
+            where: { id },
+            include: {
+                product: {
+                    select: {
+                        commands: true,
+                        permissions: true,
+                    },
+                },
+            },
+        });
+
+        await this.redis.publish('invoice:update', updated);
     }
 
     async deleteInvoiceById(id: string) {

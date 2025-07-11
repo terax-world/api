@@ -10,14 +10,18 @@ declare const module: any
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
-  app.connectMicroservice<MicroserviceOptions>({
+  const redisMicroservice = app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.REDIS,
     options: {
-      host: process.env.REDIS_HOST,
+      host: process.env.REDIS_HOST || 'redis',
       port: Number(process.env.REDIS_PORT) || 6379,
       username: process.env.REDIS_USERNAME,
       password: process.env.REDIS_PASSWORD
     }
+  })
+
+  redisMicroservice.on('error', (error) => {
+    console.error('Erro ao conectar ao Redis: ', error)
   })
 
   await app.startAllMicroservices()
