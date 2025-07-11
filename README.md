@@ -43,7 +43,7 @@ To get started with the TeraxWorld API, follow these steps:
 
 ## API Endpoints
 
-The API provides the following endpoints:
+The API provides endpoints:
 
 ### Products
 
