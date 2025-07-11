@@ -8,7 +8,9 @@ dotenv.config()
 declare const module: any
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+  const app = await NestFactory.create(AppModule)
+
+  app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.REDIS,
     options: {
       host: 'redis',
@@ -16,7 +18,8 @@ async function bootstrap() {
     }
   })
 
-  await app.listen()
+  await app.startAllMicroservices()
+  await app.listen(8080, '0.0.0.0')
 
   if (module.hot) {
     module.hot.accept();
