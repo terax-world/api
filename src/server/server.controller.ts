@@ -56,7 +56,7 @@ export class ServerController {
     }
 
     @Delete(':id')
-    async deleteServer(@Param('id') id: string): Promise<ServerModel> {
+    async deleteServer(@Param('id') id: string): Promise<{ message: string }> {
         const server = await this.service.server({ id: String(id)})
 
         if(!server){
@@ -65,7 +65,9 @@ export class ServerController {
 
         await this.productService.deleteProductByServerId(server.id)
 
-        return this.service.deleteServer({ id: server.id })
+        await this.service.deleteServer({ id: server.id })
+
+        return { message: `Categoria '${server.name}' deletada com sucesso`}
     }
 
 }

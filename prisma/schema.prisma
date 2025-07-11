@@ -54,6 +54,7 @@ model Invoice {
   status        String
   paymentMethod String
   amount        Float
+  nick          String
   transactionId String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

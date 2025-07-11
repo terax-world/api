@@ -1,102 +1,195 @@
-# API Terax World
+# TeraxWorld API Documentation
 
-[![NestJS](https://img.shields.io/badge/NestJS-11.0.1-%23E02340)](https://nestjs.com/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.7.3-%23007ACC)](https://www.typescriptlang.org/)
-[![Prisma](https://img.shields.io/badge/Prisma-6.11.1-%23DE5E2C)](https://prisma.io/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-black)](LICENSE)
+## Introduction
 
-Um projeto API construído com NestJS, um framework progressive para construir APIs com Node.js, e Prisma como ORM.
+Welcome to the TeraxWorld API documentation. This API provides endpoints for managing products, categories, servers, and invoices. It is built using NestJS and Prisma, ensuring a robust and scalable architecture.
 
-## Sumário
+## Table of Contents
 
-- [Sobre](#sobre)
-- [Tecnologias](#tecnologias)
-- [Começando](#começando)
-- [Uso](#uso)
-  - [Endpoints](#endpoints)
-- [Versões](#versões)
-- [Contribuição](#contribuição)
-- [Licença](#licença)
+1. [Getting Started](#getting-started)
+2. [API Endpoints](#api-endpoints)
+3. [Database Models](#database-models)
+4. [Configuration](#configuration)
+5. [Development](#development)
+6. [Contributing](#contributing)
+7. [License](#license)
 
-## Sobre
+## Getting Started
 
-Este é um projeto de API desenvolvido com NestJS e Prisma. O objetivo é fornecer uma estrutura robusta e escalável para APIs.
+To get started with the TeraxWorld API, follow these steps:
 
-## Tecnologias
-
-- **NestJS**: Framework progressive para construir APIs com Node.js.
-- **Prisma**: Um ORM moderno para Node.js e TypeScript.
-- **TypeScript**: Uma superset do JavaScript que adiciona tipos.
-- **Jest**: Um framework de testes.
-- **Webpack**: Um empacotador de módulos JavaScript.
-
-## Começando
-
-Para começar a usar este projeto, siga estas etapas:
-
-1. Clone o repositório:
+1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/seu-usuario/seu-repositorio.git
+   git clone https://github.com/your-username/teraxworld-api.git
+   cd teraxworld-api
    ```
-2. Navegue até o diretório do projeto:
-   ```bash
-   cd seu-repositorio
-   ```
-3. Instale as dependências:
+
+2. **Install Dependencies:**
    ```bash
    npm install
    ```
-4. Inicie o servidor de desenvolvimento:
+
+3. **Set Up Environment Variables:**
+   Create a `.env` file in the root directory and add the following:
+   ```
+   DATABASE_URL="your-database-url"
+   ```
+
+4. **Run the API:**
    ```bash
    npm run start:dev
    ```
 
-## Uso
+## API Endpoints
 
-Para usar a API, siga estas etapas:
+The API provides the following endpoints:
 
-1. Faça uma solicitação HTTP para o endpoint desejado.
-2. Use os métodos HTTP apropriados (GET, POST, PUT, DELETE, etc.).
+### Products
 
-### Endpoints
+- **GET /products**: Retrieves all products.
+- **GET /products/:id**: Retrieves a product by ID.
+- **POST /products**: Creates a new product.
+- **DELETE /products/:id**: Deletes a product by ID.
+- **PUT /products/:id**: Updates a product by ID.
 
-| Endpoint          | Method | Descrição                                      |
-|-------------------|--------|------------------------------------------------|
-| /categories       | GET    | Listar todas as categorias                      |
-| /categories       | POST   | Criar uma nova categoria                        |
-| /categories/:id   | GET    | Obter uma categoria pelo ID                     |
-| /categories/:id   | PUT    | Atualizar uma categoria pelo ID                 |
-| /categories/:id   | DELETE | Excluir uma categoria pelo ID                   |
-| /products         | GET    | Listar todos os produtos                        |
-| /products/:id     | GET    | Obter um produto pelo ID                        |
-| /servers          | GET    | Listar todos os servidores                      |
-| /servers/:id      | GET    | Obter um servidor pelo ID                       |
-| /servers/:id      | POST   | Criar um novo servidor                          |
-| /servers/:id      | PUT    | Atualizar um servidor pelo ID                   |
-| /servers/:id      | DELETE | Excluir um servidor pelo ID                     |
+### Categories
 
-## Versões
+- **GET /categories**: Retrieves all categories.
+- **GET /categories/:id**: Retrieves a category by ID.
+- **POST /categories**: Creates a new category.
+- **PUT /categories/:id**: Updates a category by ID.
+- **DELETE /categories/:id**: Deletes a category by ID.
 
-| Versão | Data       | Descrição                             |
-|--------|------------|---------------------------------------|
-| 1.0.0  | 2024-07-11 | Lançamento inicial                     |
-| 1.1.0  | 2024-08-01 | Adição de endpoints para servidores    |
-| 1.2.0  | 2024-09-15 | Melhorias na performance e estabilidade|
+### Servers
 
-## Contribuição
+- **GET /servers**: Retrieves all servers.
+- **GET /servers/:id**: Retrieves a server by ID.
+- **POST /servers**: Creates a new server.
+- **DELETE /servers/:id**: Deletes a server by ID.
+- **PUT /servers/:id**: Updates a server by ID.
 
-Para contribuir com este projeto, siga estas etapas:
+### Invoices
 
-1. Faça um fork do repositório.
-2. Crie uma nova branch com sua feature ou correção:
+- **POST /invoices**: Creates a new invoice.
+- **GET /invoices**: Retrieves all invoices.
+- **DELETE /invoices/:id**: Deletes an invoice by ID.
+
+## Database Models
+
+The database models are defined using Prisma. Here are the models:
+
+### Product
+
+- **id**: Unique identifier.
+- **name**: Product name.
+- **description**: Product description.
+- **categories**: Associated categories.
+- **servers**: Associated servers.
+- **permissions**: Permissions for the product.
+- **commands**: Commands associated with the product.
+- **price**: Product price.
+- **promoPrice**: Promotional price.
+- **image**: Product image.
+- **duration**: Duration of the product.
+- **slug**: Unique slug for the product.
+- **active**: Whether the product is active.
+- **createdAt**: Timestamp for creation.
+- **updatedAt**: Timestamp for last update.
+- **categoryId**: Foreign key for category.
+- **serverId**: Foreign key for server.
+
+### Category
+
+- **id**: Unique identifier.
+- **name**: Category name.
+- **description**: Category description.
+- **image**: Category image.
+- **createdAt**: Timestamp for creation.
+- **updatedAt**: Timestamp for last update.
+- **Product**: Associated products.
+
+### Server
+
+- **id**: Unique identifier.
+- **name**: Server name.
+- **description**: Server description.
+- **image**: Server image.
+- **createdAt**: Timestamp for creation.
+- **updatedAt**: Timestamp for last update.
+- **Product**: Associated products.
+
+### Invoice
+
+- **id**: Unique identifier.
+- **productId**: Foreign key for product.
+- **status**: Invoice status.
+- **paymentMethod**: Payment method used.
+- **amount**: Invoice amount.
+- **nick**: Nickname associated with the invoice.
+- **transactionId**: Transaction ID.
+- **createdAt**: Timestamp for creation.
+- **updatedAt**: Timestamp for last update.
+
+## Configuration
+
+The API is configured using the following files:
+
+- **.env**: Environment variables.
+- **prisma/schema.prisma**: Prisma schema for database models.
+- **nest-cli.json**: NestJS CLI configuration.
+
+## Development
+
+To develop the API, follow these steps:
+
+1. **Run the API in Development Mode:**
    ```bash
-   git checkout -b minha-feature
+   npm run start:dev
    ```
-3. Faça suas alterações e commit.
-4. Envie um pull request.
 
-## Licença
+2. **Run Tests:**
+   ```bash
+   npm run test
+   ```
 
-Este projeto está sob a licença MIT. Consulte o arquivo [LICENSE](LICENSE) para mais detalhes.
+3. **Lint the Code:**
+   ```bash
+   npm run lint
+   ```
 
----
+4. **Format the Code:**
+   ```bash
+   npm run format
+   ```
+
+## Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. **Fork the Repository:**
+   ```bash
+   git fork https://github.com/your-username/teraxworld-api.git
+   ```
+
+2. **Create a New Branch:**
+   ```bash
+   git checkout -b new-feature
+   ```
+
+3. **Make Changes and Commit:**
+   ```bash
+   git add .
+   git commit -m "Add new feature"
+   ```
+
+4. **Push Changes:**
+   ```bash
+   git push origin new-feature
+   ```
+
+5. **Create a Pull Request:**
+   Go to the repository and create a pull request.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

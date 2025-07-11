@@ -41,31 +41,43 @@ export class ProductController {
             active: boolean;
         }
     ): Promise<ProductModel> {
-        const { name, categoryId, serverId, ...rest } = productData;
+        const { name, slug, categoryId, serverId, ...rest } = productData;
 
         const existingProduct = await this.service.product({ name });
         if (existingProduct) {
             throw new BadRequestException(`Já existe um produto com o nome '${name}'.`);
         }
 
+        if(!slug?.trim()) {
+            throw new BadRequestException(`Você precisa inserir um slug`)
+        }
+
+        if (!categoryId?.trim()) {
+            throw new BadRequestException(`Você precisa inserir uma categoria.`);
+        }
+
         const categoryExists = await this.service.categoryExists(categoryId);
         if (!categoryExists) {
-            throw new BadRequestException(`Categoria com ID '${categoryId}' não existe.`);
+            throw new BadRequestException(`A categoria com o ID '${categoryId}' não existe.`);
+        }
+
+        if (!serverId?.trim()) {
+            throw new BadRequestException(`Você precisa inserir um servidor.`);
         }
 
         const serverExists = await this.service.serverExists(serverId);
         if (!serverExists) {
-            throw new BadRequestException(`Servidor com ID '${serverId}' não existe.`);
+            throw new BadRequestException(`O servidor com o ID '${serverId}' não existe.`);
         }
 
         return this.service.createProduct({
             ...rest,
             name,
+            slug,
             categories: { connect: { id: categoryId } },
             servers: { connect: { id: serverId } },
         });
     }
-
 
     @Put(':id')
     async updateProduct(@Param('id') id: string, @Body() productData: {
@@ -107,13 +119,15 @@ export class ProductController {
     }
 
     @Delete(':id')
-    async deleteProduct(@Param('id') id: string): Promise<ProductModel> {
+    async deleteProduct(@Param('id') id: string): Promise<{ message: string }> {
         const product = await this.service.product({ id })
 
         if (!product) {
             throw new NotFoundException(`O produto com o id: '${id} não existe.'`)
         }
 
-        return this.service.deleteProduct({ id })
+        await this.service.deleteProduct({ id })
+
+        return { message: `Categoria '${product.name}' deletada com sucesso`}
     }
 }

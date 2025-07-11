@@ -51,7 +51,7 @@ export class CategoryController {
     }
 
     @Delete(':id')
-    async deleteCategory(@Param('id') id: string): Promise<CategoryModel> {
+    async deleteCategory(@Param('id') id: string): Promise<{ message: string }> {
         const category = await this.service.category({ id: String(id) })
 
         if(!category) {
@@ -60,6 +60,8 @@ export class CategoryController {
 
         await this.productService.deleteProductByCategoryId(category.id)
 
-        return this.service.deleteCategory({ id: category.id })
+        await this.service.deleteCategory({ id: category.id })
+
+        return { message: `Categoria '${category.name}' deletada com sucesso`}
     }
 }

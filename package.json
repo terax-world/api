@@ -24,7 +24,9 @@
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
     "@prisma/client": "^6.11.1",
+    "dotenv": "^17.2.0",
     "dynamic-readme-generator": "^1.1.5",
+    "mercadopago": "^2.8.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
