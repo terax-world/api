@@ -8,7 +8,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 @Module({
-  imports: [AppModule, ProductModule, CategoryModule, ServerModule, InvoiceModule],
+  imports: [ProductModule, CategoryModule, ServerModule, InvoiceModule],
   controllers: [AppController],
   providers: [PrismaModule, AppService],
 })
