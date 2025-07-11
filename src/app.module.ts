@@ -6,9 +6,16 @@ import { ServerModule } from './server/server.module';
 import { InvoiceModule } from './invoice/invoice.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
-  imports: [ProductModule, CategoryModule, ServerModule, InvoiceModule],
+  imports: [ProductModule, CategoryModule, ServerModule, InvoiceModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      serveRoot: '/'
+    })
+  ],
   controllers: [AppController],
   providers: [PrismaModule, AppService],
 })
