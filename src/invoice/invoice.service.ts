@@ -204,7 +204,7 @@ export class InvoiceService {
         }
     }
 
-    async handlePaymentWebhook(paymentId: string | number){
+    async handlePaymentWebhook(paymentId: string | number) {
         try {
             const payment = await this.payment.get({ id: paymentId })
             const status = payment.status
@@ -215,7 +215,7 @@ export class InvoiceService {
                 include: { product: true }
             })
 
-            if(!invoice){
+            if (!invoice) {
                 this.logger.warn(`Invoice não encontrada para transactionId: ${transactionId}`)
                 return
             }
@@ -224,15 +224,15 @@ export class InvoiceService {
                 where: { id: invoice.id },
                 data: { status }
             })
-
-            await this.redis.publish('invoice:update', {
-                id: invoice.id,
-                status,
-                nick: invoice.nick,
-                commands: invoice.product.commands,
-                permission: invoice.product.permissions
-            })
-
+            if (status === "approved") {
+                await this.redis.publish('invoice:update', {
+                    id: invoice.id,
+                    status,
+                    nick: invoice.nick,
+                    commands: invoice.product.commands,
+                    permission: invoice.product.permissions
+                })
+            }
             this.logger.log(`Pagamento ${status} atualizado para ${invoice.nick}`)
         } catch (error) {
             this.logger.log('Erro ao processar webhook: ', error)
