@@ -28,7 +28,7 @@ export class InvoiceService {
         productSlug: string;
         nick: string;
         paymentMethod: string;
-    }): Promise<{ qrcode?: string; link?: string }> {
+    }): Promise<{ invoiceId: string; qrcode?: string; link?: string }> {
         if (!data.productSlug || data.productSlug.trim() === '') {
             throw new Error('O slug do produto é obrigatório e não pode estar em branco');
         }
@@ -72,7 +72,7 @@ export class InvoiceService {
                     throw new Error('Erro ao gerar QR Code Pix');
                 }
 
-                await this.prisma.invoice.create({
+                const invoice = await this.prisma.invoice.create({
                     data: {
                         productId: product.id,
                         status: 'pending',
@@ -83,7 +83,10 @@ export class InvoiceService {
                     },
                 });
 
-                return { qrcode };
+                return {
+                    invoiceId: invoice.id,
+                    qrcode,
+                };
             } catch (error) {
                 this.logger.error('Erro ao criar pagamento PIX:', error);
                 throw error;
@@ -116,7 +119,7 @@ export class InvoiceService {
                 },
             });
 
-            await this.prisma.invoice.create({
+            const invoice = await this.prisma.invoice.create({
                 data: {
                     productId: product.id,
                     status: 'pending',
@@ -127,12 +130,16 @@ export class InvoiceService {
                 },
             });
 
-            return { link: res.init_point! };
+            return {
+                invoiceId: invoice.id,
+                link: res.init_point!,
+            };
         } catch (error) {
             this.logger.error('Erro ao criar preferência:', error);
             throw error;
         }
     }
+
 
 
     async getAllInvoices() {
@@ -166,7 +173,17 @@ export class InvoiceService {
             },
         });
 
-        await this.redis.publish('invoice:update', updated);
+        if (!updated) {
+            throw new Error(`Invoice with id ${id} not found after update.`);
+        }
+
+        await this.redis.publish('invoice:update', {
+            data: {
+                id: updated.id,
+                status: updated.status,
+                nick: updated.nick,
+            },
+        });
     }
 
     async deleteInvoiceById(id: string) {
@@ -183,6 +200,39 @@ export class InvoiceService {
         } catch (error) {
             this.logger.error(`Erro ao deletar invoice ${id}:`, error);
             throw error;
+        }
+    }
+
+    async handlePaymentWebhook(paymentId: string | number){
+        try {
+            const payment = await this.payment.get({ id: paymentId })
+            const status = payment.status
+            const transactionId = payment.id?.toString()
+
+            const invoice = await this.prisma.invoice.findFirst({
+                where: { transactionId }
+            })
+
+            if(!invoice){
+                this.logger.warn(`Invoice não encontrada para transactionId: ${transactionId}`)
+                return
+            }
+
+            await this.prisma.invoice.update({
+                where: { id: invoice.id },
+                data: { status }
+            })
+
+            await this.redis.publish('invoice:update', {
+                id: invoice.id,
+                status,
+                nick: invoice.nick
+            })
+
+            this.logger.log(`Pagamento ${status} atualizado para ${invoice.nick}`)
+        } catch (error) {
+            this.logger.log('Erro ao processar webhook: ', error)
+            throw error
         }
     }
 

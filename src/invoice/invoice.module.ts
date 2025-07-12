@@ -3,9 +3,10 @@ import { InvoiceController } from "./invoice.controller";
 import { InvoiceService } from "./invoice.service";
 import { PrismaService } from "src/prisma/prisma.service";
 import { RedisService } from "src/redis/redis.service";
+import { InvoiceWebhookController } from "./invoice.webhook.controller";
 
 @Module({
-    controllers: [InvoiceController],
+    controllers: [InvoiceController, InvoiceWebhookController],
     providers: [InvoiceService, PrismaService, RedisService]
 })
 

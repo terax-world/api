@@ -9,7 +9,13 @@ export class DebugController {
 
     @Get()
     async testEvent() {
-        this.redisService.publish('invoice:update', { id: '123', status: 'PAID'})
-        return { success: true}
+        this.redisService.publish('invoice:update', {
+            data: {
+                status: 'PAID',
+                nick: 'neveshardd'
+            }
+        });
+        return { success: true }
     }
+
 }

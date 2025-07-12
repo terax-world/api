@@ -21,7 +21,10 @@ export class InvoiceController {
         nick: body.nick,
         paymentMethod: body.paymentMethod,
       });
-      return { message: 'Checkout criado com sucesso', checkoutData };
+      return { 
+        message: 'Checkout criado com sucesso',
+        invoiceId: checkoutData.invoiceId, 
+        checkoutData };
     } catch (error) {
       throw new HttpException('Erro ao criar checkout', HttpStatus.BAD_REQUEST);
     }
