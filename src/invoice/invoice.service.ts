@@ -3,6 +3,7 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
 import * as dotenv from "dotenv";
 import { RedisService } from "src/redis/redis.service";
+import { permission } from "process";
 
 dotenv.config();
 
@@ -210,7 +211,8 @@ export class InvoiceService {
             const transactionId = payment.id?.toString()
 
             const invoice = await this.prisma.invoice.findFirst({
-                where: { transactionId }
+                where: { transactionId },
+                include: { product: true }
             })
 
             if(!invoice){
@@ -226,7 +228,9 @@ export class InvoiceService {
             await this.redis.publish('invoice:update', {
                 id: invoice.id,
                 status,
-                nick: invoice.nick
+                nick: invoice.nick,
+                commands: invoice.product.commands,
+                permission: invoice.product.permissions
             })
 
             this.logger.log(`Pagamento ${status} atualizado para ${invoice.nick}`)
