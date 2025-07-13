@@ -211,8 +211,8 @@ export class InvoiceService {
             const transactionId = payment.id?.toString()
 
             if (status !== 'approved') {
-                this.logger.log(`Pagamento não aprovado, status: ${status}`);
-                return;
+                this.logger.log(`Pagamento não aprovado, status: ${status}`)
+                return
             }
 
             const invoice = await this.prisma.invoice.findFirst({
@@ -225,23 +225,31 @@ export class InvoiceService {
                 return
             }
 
+            if (invoice.status === 'approved') {
+                this.logger.log(`Invoice ${invoice.id} já está aprovada, ignorando webhook`)
+                return
+            }
+
             await this.prisma.invoice.update({
                 where: { id: invoice.id },
                 data: { status: 'approved' }
             })
-            await this.redis.publish('invoice:update', {
+
+            await this.redis.publish('invoice:update', JSON.stringify({
                 id: invoice.id,
                 status,
                 nick: invoice.nick,
                 commands: invoice.product.commands,
                 commandsRemove: invoice.product.commandsRemove,
                 expiration: invoice.product.expiration
-            })
+            }))
+
             this.logger.log(`Pagamento ${status} atualizado para ${invoice.nick}`)
         } catch (error) {
             this.logger.log('Erro ao processar webhook: ', error)
             throw error
         }
     }
+
 
 }
