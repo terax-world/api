@@ -17,7 +17,7 @@ import { RedisModule } from './redis/redis.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
       serveRoot: '/static'
-    })
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

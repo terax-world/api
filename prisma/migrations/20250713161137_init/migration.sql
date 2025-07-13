@@ -3,13 +3,14 @@ CREATE TABLE "Product" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "permissions" TEXT[],
+    "commandsRemove" TEXT[],
     "commands" TEXT[],
     "price" DOUBLE PRECISION NOT NULL,
     "promoPrice" DOUBLE PRECISION,
     "image" TEXT,
-    "duration" INTEGER,
+    "expiration" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
+    "active" BOOLEAN NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "categoryId" TEXT NOT NULL,
@@ -49,22 +50,21 @@ CREATE TABLE "Invoice" (
     "status" TEXT NOT NULL,
     "paymentMethod" TEXT NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
+    "nick" TEXT NOT NULL,
     "transactionId" TEXT,
+    "externalReference" TEXT,
+    "preferenceId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Invoice_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "Payment" (
-    "id" TEXT NOT NULL,
-
-    CONSTRAINT "Payment_pkey" PRIMARY KEY ("id")
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "Product_id_key" ON "Product"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Product_name_key" ON "Product"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Product_slug_key" ON "Product"("slug");
@@ -73,16 +73,22 @@ CREATE UNIQUE INDEX "Product_slug_key" ON "Product"("slug");
 CREATE UNIQUE INDEX "Category_id_key" ON "Category"("id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Category_name_key" ON "Category"("name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Server_id_key" ON "Server"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Invoice_id_key" ON "Invoice"("id");
+CREATE UNIQUE INDEX "Server_name_key" ON "Server"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Payment_id_key" ON "Payment"("id");
+CREATE UNIQUE INDEX "Invoice_id_key" ON "Invoice"("id");
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_serverId_fkey" FOREIGN KEY ("serverId") REFERENCES "Server"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import * as dotenv from 'dotenv'
+import { Logger } from '@nestjs/common';
 
 dotenv.config()
 
@@ -31,6 +32,7 @@ async function bootstrap() {
   })
 
   await app.startAllMicroservices()
+  app.useLogger(new Logger())
   await app.listen(8080, '0.0.0.0')
 
   if (module.hot) {

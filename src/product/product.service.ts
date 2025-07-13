@@ -34,15 +34,9 @@ export class ProductService {
     }
 
     async createProduct(data: Prisma.ProductCreateInput): Promise<Product> {
-        const fixedDuration =
-            typeof data.duration === 'number' && (data.duration === 0 || data.duration === null)
-                ? -1
-                : data.duration;
-
         return this.prisma.product.create({
             data: {
                 ...data,
-                duration: fixedDuration
             }
         });
     }
@@ -53,18 +47,9 @@ export class ProductService {
     }): Promise<Product> {
         const { where, data } = params;
 
-        let newData = { ...data };
-
-        if (
-            typeof data.duration === 'number' &&
-            (data.duration === 0 || data.duration === null)
-        ) {
-            newData.duration = -1;
-        }
-
         return this.prisma.product.update({
             where,
-            data: newData
+            data
         });
     }
 

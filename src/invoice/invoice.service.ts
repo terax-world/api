@@ -3,7 +3,6 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
 import * as dotenv from "dotenv";
 import { RedisService } from "src/redis/redis.service";
-import { permission } from "process";
 
 dotenv.config();
 
@@ -168,7 +167,8 @@ export class InvoiceService {
                 product: {
                     select: {
                         commands: true,
-                        permissions: true,
+                        commandsRemove: true,
+                        expiration: true
                     },
                 },
             },
@@ -210,6 +210,11 @@ export class InvoiceService {
             const status = payment.status
             const transactionId = payment.id?.toString()
 
+            if (status !== 'approved') {
+                this.logger.log(`Pagamento não aprovado, status: ${status}`);
+                return;
+            }
+
             const invoice = await this.prisma.invoice.findFirst({
                 where: { transactionId },
                 include: { product: true }
@@ -222,17 +227,16 @@ export class InvoiceService {
 
             await this.prisma.invoice.update({
                 where: { id: invoice.id },
-                data: { status }
+                data: { status: 'approved' }
             })
-            if (status === "approved") {
-                await this.redis.publish('invoice:update', {
-                    id: invoice.id,
-                    status,
-                    nick: invoice.nick,
-                    commands: invoice.product.commands,
-                    permission: invoice.product.permissions
-                })
-            }
+            await this.redis.publish('invoice:update', {
+                id: invoice.id,
+                status,
+                nick: invoice.nick,
+                commands: invoice.product.commands,
+                commandsRemove: invoice.product.commandsRemove,
+                expiration: invoice.product.expiration
+            })
             this.logger.log(`Pagamento ${status} atualizado para ${invoice.nick}`)
         } catch (error) {
             this.logger.log('Erro ao processar webhook: ', error)
