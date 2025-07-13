@@ -1,11 +1,13 @@
-import { Body, Controller, Post, HttpException, HttpStatus, Get, Delete, Param } from '@nestjs/common';
+import { Body, Controller, Post, HttpException, HttpStatus, Get, Delete, Param, NotFoundException } from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
 import { MessagePattern } from '@nestjs/microservices';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Controller('invoices')
 export class InvoiceController {
   constructor(
     private readonly invoiceService: InvoiceService,
+    private readonly prisma: PrismaService,
   ) { }
 
   @MessagePattern({ cmd: 'createInvoice' })
@@ -21,10 +23,11 @@ export class InvoiceController {
         nick: body.nick,
         paymentMethod: body.paymentMethod,
       });
-      return { 
+      return {
         message: 'Checkout criado com sucesso',
-        invoiceId: checkoutData.invoiceId, 
-        checkoutData };
+        invoiceId: checkoutData.invoiceId,
+        checkoutData
+      };
     } catch (error) {
       throw new HttpException('Erro ao criar checkout', HttpStatus.BAD_REQUEST);
     }
@@ -36,9 +39,23 @@ export class InvoiceController {
     return this.invoiceService.getAllInvoices();
   }
 
-  @MessagePattern({ cmd: 'deleteInvoiceById'})
+  @MessagePattern({ cmd: 'deleteInvoiceById' })
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.invoiceService.deleteInvoiceById(id);
+  }
+
+  @Post(':id/finish')
+  async finishInvoice(@Param('id') id: string){
+    const invoice = await this.prisma.invoice.findUnique({ where: { id } })
+
+    if(!invoice) throw new NotFoundException('Invoice não encontrada')
+
+    await this.prisma.invoice.update({
+      where: { id },
+      data: { status: 'finished' }
+    })
+
+    return { success: true }
   }
 }
